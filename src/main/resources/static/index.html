@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test CMS Backend</title>
+    <style>
+        body { font-family: Arial, sans-serif; }
+        .response { margin-top: 20px; }
+        .form-control { margin: 10px 0; }
+    </style>
+</head>
+<body>
+<h1>Test CMS Backend</h1>
+
+<h2>Create Article</h2>
+<input type="text" id="articleTitle" class="form-control" placeholder="Title">
+<textarea id="articleContent" class="form-control" placeholder="Content"></textarea>
+<button id="createArticleBtn">Create Article</button>
+
+<h2>Get Articles</h2>
+<button id="getArticlesBtn">Get Articles</button>
+
+<h2>Update Article</h2>
+<input type="text" id="updateArticleId" class="form-control" placeholder="Article ID">
+<input type="text" id="updateArticleTitle" class="form-control" placeholder="New Title">
+<textarea id="updateArticleContent" class="form-control" placeholder="New Content"></textarea>
+<button id="updateArticleBtn">Update Article</button>
+
+<h2>Delete Article</h2>
+<input type="text" id="deleteArticleId" class="form-control" placeholder="Article ID">
+<button id="deleteArticleBtn">Delete Article</button>
+
+<div class="response" id="response"></div>
+
+<script>
+    const apiBaseUrl = 'http://localhost:8080/api/articles'; // Adjust the base URL as needed
+
+    // Create Article
+    document.getElementById('createArticleBtn').addEventListener('click', async () => {
+        const title = document.getElementById('articleTitle').value;
+        const content = document.getElementById('articleContent').value;
+
+        try {
+            const response = await fetch(apiBaseUrl, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ title, content }),
+            });
+            const data = await response.json();
+            displayResponse(data);
+        } catch (error) {
+            displayError(error);
+        }
+    });
+
+    // Get Articles
+    document.getElementById('getArticlesBtn').addEventListener('click', async () => {
+        try {
+            const response = await fetch(apiBaseUrl);
+            const data = await response.json();
+            displayResponse(data);
+        } catch (error) {
+            displayError(error);
+        }
+    });
+
+    // Update Article
+    document.getElementById('updateArticleBtn').addEventListener('click', async () => {
+        const id = document.getElementById('updateArticleId').value;
+        const title = document.getElementById('updateArticleTitle').value;
+        const content = document.getElementById('updateArticleContent').value;
+
+        try {
+            const response = await fetch(`${apiBaseUrl}/${id}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ title, content }),
+            });
+            const data = await response.json();
+            displayResponse(data);
+        } catch (error) {
+            displayError(error);
+        }
+    });
+
+    // Delete Article
+    document.getElementById('deleteArticleBtn').addEventListener('click', async () => {
+        const id = document.getElementById('deleteArticleId').value;
+
+        try {
+            const response = await fetch(`${apiBaseUrl}/${id}`, {
+                method: 'DELETE',
+            });
+            const data = await response.json();
+            displayResponse(data);
+        } catch (error) {
+            displayError(error);
+        }
+    });
+
+    // Display Response
+    function displayResponse(data) {
+        document.getElementById('response').innerText = JSON.stringify(data, null, 2);
+    }
+
+    // Display Error
+    function displayError(error) {
+        document.getElementById('response').innerText = 'Error: ' + error.message;
+    }
+</script>
+</body>
+</html>
